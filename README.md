@@ -11,6 +11,18 @@ Profile helper
 
 ## Installation
 
+Add this line to your application's Gemfile:
+
+```ruby
+gem 'hotch'
+```
+
+And then execute:
+
+    $ bundle
+
+Or install it yourself as:
+
     $ gem install hotch
 
 ## Usage
@@ -24,6 +36,12 @@ Profile helper
 Set envvar `HOTCH_VIEWER` to enable auto-view after profiling.
 
     $ export HOTCH_VIEWER=eog # use Gnome viewer
+
+## Caveat
+
+### Using with bundler
+
+If you use `hotch` in project managed by `bundler` you have to specify `hotch` in `Gemfile`.(see Installation section above)
 
 ## Contributing
 
