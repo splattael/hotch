@@ -16,12 +16,14 @@ Profile helper
 ## Usage
 
     $ ruby -rhotch my_program.rb
-    Profile SVG: /tmp/stackprof.my_program20150104-17330-18t4171/profile.svg
-    $ view /tmp/stackprof.my_program20150104-17330-18t4171/profile.svg
+    Profile SVG: /tmp/hotch.my_program20150104-17330-18t4171/profile.svg
+    $ view /tmp/hotch.my_program20150104-17330-18t4171/profile.svg
 
 ### Auto-view
 
-Set envvar `HOTCH_VIEWER=eog` to enable auto-view after profiling
+Set envvar `HOTCH_VIEWER` to enable auto-view after profiling.
+
+    $ export HOTCH_VIEWER=eog # use Gnome viewer
 
 ## Contributing
 
