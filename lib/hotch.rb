@@ -52,10 +52,11 @@ class Hotch
       stop
 
       report do |svg|
-        puts "Profile SVG: #{svg}"
-
         if viewer
+          puts "Profile SVG: #{svg}"
           Kernel.system viewer, svg
+        else
+          puts "Profile SVG: view #{svg} # no HOTCH_VIEWER set"
         end
       end
     end
