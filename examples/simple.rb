@@ -1,3 +1,4 @@
+require 'hotch'
 
 COUNT = ENV.fetch('COUNT', 10_000)
 
@@ -9,7 +10,14 @@ def bar
   ["x"] * 23
 end
 
-COUNT.times do
-  foo
-  bar
+Hotch(aggregate: false) do
+  COUNT.times do
+    foo
+  end
+end
+
+Hotch() do
+  COUNT.times do
+    bar
+  end
 end
