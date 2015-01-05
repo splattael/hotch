@@ -27,9 +27,39 @@ Or install it yourself as:
 
 ## Usage
 
+### Profile complete program
+
     $ ruby -rhotch/run my_program.rb
     Profile SVG: /tmp/hotch.my_program20150104-17330-18t4171/profile.svg
     $ view /tmp/hotch.my_program20150104-17330-18t4171/profile.svg
+
+### Profile blocks in your program
+
+```ruby
+require 'hotch'
+
+def expensive_method
+  # ...
+end
+
+Hotch() do
+  1000.times do
+    expensive_method
+  end
+end
+
+Hotch(aggregate: false) do
+  1000.times do
+    # this run is not aggregated
+  end
+end
+
+Hotch() do
+  1000.times do
+    # aggregated again
+  end
+end
+```
 
 ### Auto-view
 
