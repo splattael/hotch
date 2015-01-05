@@ -1,32 +1,28 @@
 require 'stackprof'
-require 'tmpdir'
 
-HOTCH_VIEWER = ENV['HOTCH_VIEWER']
+class Hotch
+  def initialize
+  end
 
-NAME = $0.gsub(/\W/, '_')
+  def start(*args)
+    StackProf.start(*args)
+  end
 
-StackProf.start
+  def stop
+    StackProf.stop
+  end
 
-def system!(*args)
-  system(*args) or raise "system call failed: #{args.join(' ')}"
+  def run(*args)
+    start(*args)
+  ensure
+    stop
+  end
+
+  def results
+    StackProf.results
+  end
 end
 
-at_exit do
-  StackProf.stop
+def Hotch()
 
-  dir = Dir.mktmpdir("hotch.#{NAME}")
-  dump = File.open(File.join(dir, "profile.dump"), "wb")
-  svg = File.join(File.join(dir, "profile.svg"))
-
-  StackProf::Report.new(StackProf.results).print_graphviz(nil, dump)
-
-  dump.close
-
-  system! "dot", "-Tsvg", "-o", svg, dump.path
-
-  puts "Profile SVG: #{svg}"
-
-  if viewer = HOTCH_VIEWER
-    system! viewer, svg
-  end
 end

@@ -27,7 +27,7 @@ Or install it yourself as:
 
 ## Usage
 
-    $ ruby -rhotch my_program.rb
+    $ ruby -rhotch/run my_program.rb
     Profile SVG: /tmp/hotch.my_program20150104-17330-18t4171/profile.svg
     $ view /tmp/hotch.my_program20150104-17330-18t4171/profile.svg
 
