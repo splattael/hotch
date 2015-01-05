@@ -93,12 +93,12 @@ class Hotch
   end
 end
 
-def Hotch(aggregate: true)
+def Hotch(name: $0, aggregate: true)
   hotch = if aggregate
-    $hotch ||= Hotch.new($0)
+    $hotch ||= Hotch.new(name)
   else
     caller = Kernel.caller_locations(1).first
-    Hotch.new("#$0:#{caller.path}:#{caller.lineno}")
+    Hotch.new("#{name}:#{caller.path}:#{caller.lineno}")
   end
 
   hotch.report_at_exit
