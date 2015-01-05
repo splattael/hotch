@@ -1,6 +1,8 @@
 require 'stackprof'
 require 'tmpdir'
 
+require 'hotch/monkey_patches'
+
 class Hotch
   attr_reader :name
 
@@ -35,21 +37,12 @@ class Hotch
     report = @reports.inject(:+) or return
 
     dir = Dir.mktmpdir("hotch.#{name}.")
-    dump = File.open(File.join(dir, "profile.dump"), "wb")
-    svg = File.join(File.join(dir, "profile.svg"))
 
-
-    report.print_graphviz(nil, dump)
-
-    dump.close
-
-    system! "dot", "-Tsvg", "-o", svg, dump.path
+    report_dump(report, dir, "profile.dump")
+    dot = report_dot(report, dir, "profile.dot")
+    svg = convert_svg(dir, dot, "profile.svg")
 
     yield svg
-  end
-
-  def system!(*args)
-    Kernel.system(*args) or raise "system call failed: #{args.join(' ')}"
   end
 
   def report_at_exit(viewer=ENV['HOTCH_VIEWER'])
@@ -62,7 +55,7 @@ class Hotch
         puts "Profile SVG: #{svg}"
 
         if viewer
-          system viewer, svg
+          Kernel.system viewer, svg
         end
       end
     end
@@ -74,6 +67,28 @@ class Hotch
 
   def name
     @name.gsub(/\W+/, '_')
+  end
+
+  def report_dump(report, dir, file)
+    path = File.join(dir, file)
+    File.open(path, 'wb') do |fh|
+      report.print_dump(fh)
+    end
+    path
+  end
+
+  def report_dot(report, dir, file)
+    path = File.join(dir, file)
+    File.open(path, 'wb') do |fh|
+      report.print_graphviz(nil, fh)
+    end
+    path
+  end
+
+  def convert_svg(dir, dot, file)
+    svg = File.join(dir, file)
+    system("dot", "-Tsvg", "-o", svg, dot) or raise "dot failed"
+    svg
   end
 end
 
