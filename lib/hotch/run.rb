@@ -1,8 +1,6 @@
 require 'hotch'
 
-viewer = ENV['HOTCH_VIEWER']
-
-hotch = Hotch.new($0)
+hotch = Hotch.new($0, viewer: ENV['HOTCH_VIEWER'])
 hotch.start
 
-hotch.report_at_exit(viewer)
+hotch.report_at_exit

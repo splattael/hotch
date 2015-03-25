@@ -4,10 +4,11 @@ require 'tmpdir'
 require 'hotch/monkey_patches'
 
 class Hotch
-  attr_reader :name
+  attr_reader :name, :viewer
 
-  def initialize(name)
+  def initialize(name, viewer: nil)
     @name = name
+    @viewer = viewer
     @reports = []
   end
 
@@ -45,7 +46,7 @@ class Hotch
     yield svg
   end
 
-  def report_at_exit(viewer=ENV['HOTCH_VIEWER'])
+  def report_at_exit
     return if defined? @at_exit_installed
 
     at_exit do
@@ -93,12 +94,12 @@ class Hotch
   end
 end
 
-def Hotch(name: $0, aggregate: true)
+def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'])
   hotch = if aggregate
-    $hotch ||= Hotch.new(name)
+    $hotch ||= Hotch.new(name, viewer: viewer)
   else
     caller = Kernel.caller_locations(1).first
-    Hotch.new("#{name}:#{caller.path}:#{caller.lineno}")
+    Hotch.new("#{name}:#{caller.path}:#{caller.lineno}", viewer: viewer)
   end
 
   hotch.report_at_exit
