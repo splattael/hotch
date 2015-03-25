@@ -4,11 +4,12 @@ require 'tmpdir'
 require 'hotch/monkey_patches'
 
 class Hotch
-  attr_reader :name, :viewer
+  attr_reader :name, :viewer, :filter
 
-  def initialize(name, viewer: nil)
+  def initialize(name, viewer: nil, filter: nil)
     @name = name
     @viewer = viewer
+    @filter = filter
     @reports = []
   end
 
@@ -82,7 +83,7 @@ class Hotch
   def report_dot(report, dir, file)
     path = File.join(dir, file)
     File.open(path, 'wb') do |fh|
-      report.print_graphviz(nil, fh)
+      report.print_graphviz(filter && Regexp.new(filter), fh)
     end
     path
   end
@@ -94,12 +95,12 @@ class Hotch
   end
 end
 
-def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'])
+def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'], filter: ENV['HOTCH_FILTER'])
   hotch = if aggregate
-    $hotch ||= Hotch.new(name, viewer: viewer)
+    $hotch ||= Hotch.new(name, viewer: viewer, filter: filter)
   else
     caller = Kernel.caller_locations(1).first
-    Hotch.new("#{name}:#{caller.path}:#{caller.lineno}", viewer: viewer)
+    Hotch.new("#{name}:#{caller.path}:#{caller.lineno}", viewer: viewer, filter: filter)
   end
 
   hotch.report_at_exit
