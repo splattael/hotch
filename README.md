@@ -67,6 +67,13 @@ Set envvar `HOTCH_VIEWER` to enable auto-view after profiling.
 
     $ export HOTCH_VIEWER=eog # use Gnome viewer
 
+### Filter
+
+Set envvar `HOTCH_FILTER` to (regexp) filter frames by its name.
+
+    $ export HOTCH_FILTER=ROM
+    $ export HOTCH_FILTER=Bundler
+
 ## Caveat
 
 ### Using with bundler
