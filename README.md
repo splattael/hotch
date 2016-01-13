@@ -74,6 +74,15 @@ Set envvar `HOTCH_FILTER` to (regexp) filter frames by its name.
     $ export HOTCH_FILTER=ROM
     $ export HOTCH_FILTER=Bundler
 
+### Minitest integration
+
+Load `hotch/minitest` in your `test/test_helper.rb` like this:
+
+```ruby
+require 'minitest/autorun'
+require 'hotch/minitest'
+```
+
 ## Caveat
 
 ### Using with bundler
