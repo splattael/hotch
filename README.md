@@ -81,6 +81,11 @@ Load `hotch/minitest` in your `test/test_helper.rb` like this:
 ```ruby
 require 'minitest/autorun'
 require 'hotch/minitest'
+
+Hotch::Minitest.run
+Hotch::Minitest.run(filter: /MyClass/)
+Hotch::Minitest.run(options: <stackprof options>)
+Hotch::Minitest.run(options: { limit: 200 })
 ```
 
 ## Caveat
