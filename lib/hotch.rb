@@ -4,13 +4,15 @@ require 'tmpdir'
 require 'hotch/monkey_patches'
 
 class Hotch
-  attr_reader :name, :viewer, :filter
+  attr_reader :name, :viewer, :filter, :options
 
-  def initialize(name, viewer: nil, filter: nil)
+  def initialize(name, viewer: nil, filter: nil, options: {})
     @name = name
     @viewer = viewer
-    @filter = filter
+    @options = options
     @reports = []
+
+    @options[:filter] = Regexp.new(filter) if filter
   end
 
   def start(*args)
@@ -73,19 +75,15 @@ class Hotch
   end
 
   def report_dump(report, dir, file)
-    path = File.join(dir, file)
-    File.open(path, 'wb') do |fh|
+    write_file(dir, file) do |fh|
       report.print_dump(fh)
     end
-    path
   end
 
   def report_dot(report, dir, file)
-    path = File.join(dir, file)
-    File.open(path, 'wb') do |fh|
-      report.print_graphviz(filter && Regexp.new(filter), fh)
+    write_file(dir, file) do |fh|
+      report.print_graphviz(options, fh)
     end
-    path
   end
 
   def convert_svg(dir, dot, file)
@@ -93,14 +91,23 @@ class Hotch
     system("dot", "-Tsvg", "-o", svg, dot) or raise "dot failed"
     svg
   end
+
+  def write_file(dir, file)
+    path = File.join(dir, file)
+    File.open(path, 'wb') do |fh|
+      yield fh
+    end
+    path
+  end
 end
 
-def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'], filter: ENV['HOTCH_FILTER'])
+def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'], filter: ENV['HOTCH_FILTER'], options: {})
   hotch = if aggregate
-    $hotch ||= Hotch.new(name, viewer: viewer, filter: filter)
+    $hotch ||= Hotch.new(name, viewer: viewer, filter: filter, options: options)
   else
     caller = Kernel.caller_locations(1).first
-    Hotch.new("#{name}:#{caller.path}:#{caller.lineno}", viewer: viewer, filter: filter)
+    name = "#{name}:#{caller.path}:#{caller.lineno}"
+    Hotch.new(name, viewer: viewer, filter: filter, options: options)
   end
 
   hotch.report_at_exit
