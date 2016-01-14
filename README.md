@@ -101,3 +101,11 @@ If you use `hotch` in project managed by `bundler` you have to specify `hotch` i
 3. Commit your changes (`git commit -am 'Add some feature'`)
 4. Push to the branch (`git push origin my-new-feature`)
 5. Create a new Pull Request
+
+## Release
+
+Follow these steps to release this gem:
+
+    edit lib/hotch/version.rb
+    git commit -m "Release vX.Y.Z"
+    rake release
