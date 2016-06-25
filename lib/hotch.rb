@@ -1,8 +1,6 @@
 require 'stackprof'
 require 'tmpdir'
 
-require 'hotch/monkey_patches'
-
 class Hotch
   attr_reader :name, :viewer, :filter, :options
 
