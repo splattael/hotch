@@ -6,8 +6,8 @@ Profile helper
 
 * Wraps your program run with [stackprof](https://github.com/tmm1/stackprof)
 * Dumps profile results
-* Converts profile dump using `graphviz` (dot) to SVG
-* Optionally shows the call-stack graph
+* Converts a profile dump using [graphviz](http://www.graphviz.org/) (dot) to SVG
+* Optionally shows the call-stack graph after program exit
 
 ## Example
 
