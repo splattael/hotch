@@ -9,6 +9,12 @@ Profile helper
 * Converts profile dump using `graphviz` (dot) to SVG
 * Optionally shows the call-stack graph
 
+## Example
+
+From [dry-validation](https://github.com/dry-rb/dry-validation) [benchmarks/profile_schema_call_valid.rb](https://github.com/dry-rb/dry-validation/blob/3d090eeafac9d1c31fdc3e054f8fd5ec900e12f9/benchmarks/profile_schema_call_valid.rb):
+
+![dry-validation](images/dry-validation.profile_schema_call_valid.png?raw=true "benchmarks/profile_schema_call_valid.rb")
+
 ## Installation
 
 Add this line to your application's Gemfile:
