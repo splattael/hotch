@@ -7,16 +7,55 @@ Profile helper
 
 ## What?
 
-* Wraps your program run with [stackprof](https://github.com/tmm1/stackprof)
+### Callstack profiler
+
+* Wraps your program run with [stackprof](https://rubygems.org/gems/stackprof)
 * Dumps profile results
 * Converts a profile dump using [graphviz](http://www.graphviz.org/) (dot) to SVG
 * Optionally shows the call-stack graph after program exit
 
+### Memory profiler
+
+* Traces memory allocation using [allocation_tracer](https://rubygems.org/gems/allocation_tracer)
+* Prints the results formatted and sorted by object count
+
 ## Example
+
+### Callstack profiler
 
 From [dry-validation](https://github.com/dry-rb/dry-validation) [benchmarks/profile_schema_call_valid.rb](https://github.com/dry-rb/dry-validation/blob/3d090eeafac9d1c31fdc3e054f8fd5ec900e12f9/benchmarks/profile_schema_call_valid.rb):
 
 ![dry-validation](images/dry-validation.profile_schema_call_valid.png?raw=true "benchmarks/profile_schema_call_valid.rb")
+
+### Memory profiler
+
+```
+                        filename     type count old_count total_age min_age max_age total_memsize
+                    inline.rb:28  T_IMEMO     1         0         0       0       0             0
+dry/struct/class_interface.rb:74  T_IMEMO     1         0         0       0       0             0
+dry/struct/class_interface.rb:77  T_IMEMO     1         0         0       0       0             0
+       dry/types/decorator.rb:28  T_IMEMO     1         0         0       0       0             0
+     dry/types/hash/schema.rb:96  T_IMEMO     2         0         0       0       0             0
+     dry/types/hash/schema.rb:52  T_IMEMO     2         0         0       0       0             0
+                    inline.rb:27 T_STRING  1000         0         0       0       0             0
+                    inline.rb:28   T_HASH  1000         0         0       0       0             0
+                    inline.rb:26   T_HASH  1000         0         0       0       0             0
+     dry/types/hash/schema.rb:92   T_HASH  2000         0         0       0       0             0
+     dry/types/hash/schema.rb:60   T_HASH  2000         0         0       0       0             0
+             dry/logic/rule.rb:0  T_ARRAY  2000         0         0       0       0             0
+            dry/logic/rule.rb:47 T_OBJECT  2000         0         0       0       0             0
+      dry/types/definition.rb:59 T_OBJECT  2000         0         0       0       0             0
+dry/struct/class_interface.rb:77 T_OBJECT  2000         0         0       0       0             0
+     dry/types/constrained.rb:20   T_DATA  4000         0         0       0       0             0
+     dry/types/constrained.rb:27  T_ARRAY  4000         0         0       0       0             0
+            dry/logic/rule.rb:47  T_ARRAY  4000         0         0       0       0             0
+            dry/logic/rule.rb:47   T_DATA  4000         0         0       0       0             0
+      dry/types/definition.rb:51  T_ARRAY  4000         0         0       0       0             0
+     dry/types/hash/schema.rb:92  T_ARRAY  6000         0         0       0       0             0
+                dry/struct.rb:16 T_STRING  6000         0         0       0       0             0
+                           TOTAL          47008         0         0       0       0             0
+```
+
 
 ## Installation
 
@@ -96,6 +135,46 @@ Hotch::Minitest.run(filter: /MyClass/)
 Hotch::Minitest.run(options: <stackprof options>)
 Hotch::Minitest.run(options: { limit: 200 })
 ```
+
+### Memory profiler
+
+Require `hotch/memory` and use `Hotch.memory { ... }` as in:
+
+```ruby
+require "bundler/setup"
+
+require "dry-types"
+require "dry-struct"
+require "hotch/memory"
+
+module Types
+  class IntStruct < Dry::Struct
+    include Dry::Types.module
+    constructor_type :strict
+    attribute :int, Strict::Int
+  end
+
+  class Success < Dry::Struct
+    include Dry::Types.module
+    constructor_type :strict
+    attribute :string, Strict::String
+    attribute :sub, Types::IntStruct
+  end
+end
+
+# For more stable results
+GC.disable
+
+Hotch.memory do
+  1000.times do
+    Types::Success.new(
+      :string => "string",
+      :sub => Types::IntStruct.new(:int => 1)
+    )
+  end
+end
+```
+
 
 ## Caveat
 
