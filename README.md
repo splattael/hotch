@@ -1,7 +1,7 @@
 # Hotch
 
 [![Gem Version](https://img.shields.io/gem/v/hotch.svg)](https://rubygems.org/gems/hotch)
-[![Source code](https://img.shields.io/badge/GitHub-Source-blue.svg)](https://github.com/splattael/hotch)
+[![Source code](https://img.shields.io/badge/code-GitHub-blue.svg)](https://github.com/splattael/hotch)
 
 Profile helper
 
