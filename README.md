@@ -1,5 +1,8 @@
 # Hotch
 
+[![Gem Version](https://img.shields.io/gem/v/hotch.svg)](https://rubygems.org/gems/hotch)
+[![Source code](https://img.shields.io/badge/GitHub-Source-blue.svg)](https://github.com/splattael/hotch)
+
 Profile helper
 
 ## What?
@@ -20,7 +23,7 @@ From [dry-validation](https://github.com/dry-rb/dry-validation) [benchmarks/prof
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hotch'
+gem 'hotch', '~> 0.3.0'
 ```
 
 And then execute:
@@ -112,6 +115,9 @@ If you use `hotch` in project managed by `bundler` you have to specify `hotch` i
 
 Follow these steps to release this gem:
 
+    # Increase version
     edit lib/hotch/version.rb
+    edit README.md
+    # Commit
     git commit -m "Release vX.Y.Z"
     rake release
