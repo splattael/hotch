@@ -1,14 +1,17 @@
 require 'allocation_tracer'
 
 class Hotch
-  def self.memory(name: $0)
+  def self.memory(name: $0, &block)
     caller = Kernel.caller_locations(1).first
     name = "#{name}:#{caller.path}:#{caller.lineno}"
     memory = Memory.new(name)
 
     memory.report_at_exit
-    memory.run do
-      yield
+
+    if block
+      memory.run(&block)
+    else
+      memory.start
     end
   end
 
@@ -16,11 +19,12 @@ class Hotch
     def initialize(name, ignore_paths: [])
       @name = name
       @ignore_paths = Array(ignore_paths || [])
-      @report = nil
+      @reports = []
       @started = nil
     end
 
     def start
+      return if @started
       ObjectSpace::AllocationTracer.setup [:path, :line, :type]
       ObjectSpace::AllocationTracer.start
       @started = true
@@ -30,7 +34,7 @@ class Hotch
       return unless @started
       results = ObjectSpace::AllocationTracer.stop
       @started = nil
-      @report = Report.new(results, @ignore_paths)
+      @reports << Report.new(results, @ignore_paths)
     end
 
     def run
@@ -42,7 +46,9 @@ class Hotch
 
     def report
       # TODO make it persistent (as CSV)
-      yield @report
+      report = @reports.inject(:sum)
+      yield report
+      @reports.clear
     end
 
     def report_at_exit
@@ -66,15 +72,26 @@ class Hotch
     end
 
     class Report
+      attr_reader :lines
+
       def initialize(results, ignore_paths)
         @header = Line.new(*Line.members)
-        @total = Line::Total.new
         @lines = results.map do |result|
-          if line = Line.from_result(result, ignore_paths)
-            @total.sum(line)
-            line
-          end
+          Line.from_result(result, ignore_paths)
         end.compact
+      end
+
+      def sum(other)
+        by_key = Hash[@lines.map { |line| [line.key, line] }]
+        other.lines.each do |line|
+          if existing = by_key[line.key]
+            existing.sum(line)
+          else
+            by_key[line.key] = line
+            @lines << line
+          end
+        end
+        self
       end
 
       def format
@@ -89,10 +106,26 @@ class Hotch
       end
 
       def puts(io)
+        total!
         fmt = format
         @header.puts(io, fmt)
         @lines.sort_by(&:count).each { |line| line.puts(io, fmt) }
         @total.puts(io, fmt)
+      end
+
+      def to_s
+        io = StringIO.new
+        puts(io)
+        io.string
+      end
+
+      private def total!
+        return if defined? @total
+
+        @total = Line::Total.new
+        @lines.each do |line|
+          @total.sum(line)
+        end
       end
 
       class Line < Struct.new(:filename, :type, :count, :old_count, :total_age,
@@ -108,6 +141,10 @@ class Hotch
           new(filename, *args)
         end
 
+        def key
+          [filename, type]
+        end
+
         def puts(io, fmt)
           send = method(:send)
           io.puts fmt % members.map(&send)
@@ -115,6 +152,12 @@ class Hotch
 
         def lengths
           members.map { |member| self[member].to_s.size }
+        end
+
+        def sum(other)
+          other.to_a.each.with_index do |value, i|
+            self[i] += value if Numeric === value
+          end
         end
 
         private
@@ -134,12 +177,6 @@ class Hotch
         class Total < Line
           def initialize
             super("TOTAL", "", 0, 0, 0, 0, 0, 0)
-          end
-
-          def sum(other)
-            other.to_a.each.with_index do |value, i|
-              self[i] += value if Numeric === value
-            end
           end
         end
       end
