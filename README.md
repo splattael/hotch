@@ -62,7 +62,7 @@ dry/struct/class_interface.rb:77 T_OBJECT  2000         0         0       0     
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hotch', '~> 0.4.0'
+gem 'hotch', '~> 0.4.1'
 ```
 
 And then execute:
@@ -198,5 +198,5 @@ Follow these steps to release this gem:
     edit lib/hotch/version.rb
     edit README.md
     # Commit
-    git commit -m "Release vX.Y.Z"
+    git commit -am "Release vX.Y.Z"
     rake release
