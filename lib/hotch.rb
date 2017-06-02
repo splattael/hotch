@@ -86,7 +86,7 @@ class Hotch
 
   def convert_svg(dir, dot, file)
     svg = File.join(dir, file)
-    system("dot", "-Tsvg", "-o", svg, dot) or raise "dot failed"
+    system("dot", "-Tsvg", "-o", svg, dot) or raise "dot: command not found. Please install graphviz"
     svg
   end
 
