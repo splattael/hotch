@@ -62,7 +62,7 @@ dry/struct/class_interface.rb:77 T_OBJECT  2000         0         0       0     
 Add this line to your application's Gemfile:
 
 ```ruby
-gem 'hotch', '~> 0.4.2'
+gem 'hotch', '~> 0.5.0'
 ```
 
 And then execute:
