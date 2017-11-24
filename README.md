@@ -162,9 +162,7 @@ module Types
   end
 end
 
-# For more stable results
-GC.disable
-
+# For more stable results the GC is disabled by default during runs.
 Hotch.memory do
   1000.times do
     Types::Success.new(
@@ -173,6 +171,29 @@ Hotch.memory do
     )
   end
 end
+
+# In order to prevent disabling the GC during runs do:
+Hotch.memory(disable_gc: false) do
+  # ...
+end
+
+# Disable aggregation between runs:
+Hotch.memory(aggregate: false) do
+  # this run is not aggregated
+end
+```
+
+### Minitest integration for the memory profiler
+
+Load `hotch/memory/minitest` in your `test/test_helper.rb` like this:
+
+```ruby
+require 'minitest/autorun'
+require 'hotch/memory/minitest'
+
+Hotch::Minitest.run
+Hotch::Minitest.run(name: "my name")
+Hotch::Minitest.run(disable_gc: false) # on by default
 ```
 
 

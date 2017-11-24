@@ -1,10 +1,14 @@
 require 'allocation_tracer'
 
 class Hotch
-  def self.memory(name: $0, &block)
-    caller = Kernel.caller_locations(1).first
-    name = "#{name}:#{caller.path}:#{caller.lineno}"
-    memory = Memory.new(name)
+  def self.memory(name: $0, aggregate: true, &block)
+    memory = if aggregate
+               $hotch_memory ||= Memory.new(name)
+             else
+               caller = Kernel.caller_locations(1).first
+               name = "#{name}:#{caller.path}:#{caller.lineno}"
+               Memory.new(name)
+             end
 
     memory.report_at_exit
 
@@ -16,15 +20,17 @@ class Hotch
   end
 
   class Memory
-    def initialize(name, ignore_paths: [])
+    def initialize(name, ignore_paths: [], disable_gc: true)
       @name = name
       @ignore_paths = Array(ignore_paths || [])
       @reports = []
       @started = nil
+      @disable_gc = disable_gc
     end
 
     def start
       return if @started
+      GC.disable if @disable_gc
       ObjectSpace::AllocationTracer.setup [:path, :line, :type]
       ObjectSpace::AllocationTracer.start
       @started = true
@@ -34,6 +40,7 @@ class Hotch
       return unless @started
       results = ObjectSpace::AllocationTracer.stop
       @started = nil
+      GC.enable if @disable_gc
       @reports << Report.new(results, @ignore_paths)
     end
 
