@@ -6,10 +6,10 @@ require 'hotch/version'
 Gem::Specification.new do |spec|
   spec.name          = "hotch"
   spec.version       = Hotch::VERSION
-  spec.authors       = ["Peter Suschlik"]
-  spec.email         = ["peter@suschlik.de"]
+  spec.authors       = ["Peter Leitzen"]
+  spec.email         = ["peter@leitzen.de"]
   spec.summary       = %q{Profile helper}
-  spec.description   = %q{Stackprofs your program, generates/display call-stack profile as SVG}
+  spec.description   = %q{Callstack and memory profiler}
   spec.homepage      = "https://github.com/splattael/hotch"
   spec.license       = "MIT"
 
