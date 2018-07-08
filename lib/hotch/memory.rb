@@ -144,7 +144,7 @@ class Hotch
         def self.from_result(result, ignore_paths)
           path, line, *args = result.flatten(1)
           return if ignore_paths.any? { |ip| ip == path || ip === path }
-          filename = "#{strip_path(path)}:#{line}"
+          filename = "#{strip_path(path || "?")}:#{line}"
           new(filename, *args)
         end
 
