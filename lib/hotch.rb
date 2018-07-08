@@ -1,6 +1,8 @@
 require 'stackprof'
 require 'tmpdir'
 
+require 'hotch/version'
+
 class Hotch
   attr_reader :name, :viewer, :filter, :options
 
