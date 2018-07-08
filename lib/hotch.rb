@@ -46,7 +46,13 @@ class Hotch
     dot = report_dot(report, dir, "profile.dot")
     svg = convert_svg(dir, dot, "profile.svg")
 
-    yield svg
+    @reports.clear
+
+    if block_given?
+      yield report, svg
+    else
+      return report, svg
+    end
   end
 
   def report_at_exit
@@ -55,7 +61,7 @@ class Hotch
     at_exit do
       stop
 
-      report do |svg|
+      report do |_, svg|
         if viewer
           puts "Profile SVG: #{svg}"
           Kernel.system viewer, svg

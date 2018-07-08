@@ -53,9 +53,14 @@ class Hotch
 
     def report
       # TODO make it persistent (as CSV)
-      report = @reports.inject(:sum)
-      yield report
+      report = @reports.inject(:+)
       @reports.clear
+
+      if block_given?
+        yield report
+      else
+        report
+      end
     end
 
     def report_at_exit
@@ -88,7 +93,7 @@ class Hotch
         end.compact
       end
 
-      def sum(other)
+      def +(other)
         by_key = Hash[@lines.map { |line| [line.key, line] }]
         other.lines.each do |line|
           if existing = by_key[line.key]
