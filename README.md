@@ -138,6 +138,10 @@ Hotch::Minitest.run(options: { limit: 200 })
 
 ### Memory profiler
 
+Shell usage:
+
+    $ ruby -rhotch/memory/run my_program.rb
+
 Require `hotch/memory` and use `Hotch.memory { ... }` as in:
 
 ```ruby
