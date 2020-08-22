@@ -187,6 +187,20 @@ Hotch.memory(aggregate: false) do
 end
 ```
 
+#### Inline reporting
+
+This prints two ASCII tables showing the object alloctions two calls:
+
+```ruby
+puts Hotch::Memory.report("memory") {
+  # ...
+}
+
+puts Hotch::Memory.report("another") {
+  # ...
+}
+```
+
 ### Minitest integration for the memory profiler
 
 Load `hotch/memory/minitest` in your `test/test_helper.rb` like this:

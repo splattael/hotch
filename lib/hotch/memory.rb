@@ -28,6 +28,10 @@ class Hotch
       @disable_gc = disable_gc
     end
 
+    def self.report(name, **args, &block)
+      new(name, **args).run(&block).report
+    end
+
     def start
       return if @started
       GC.disable if @disable_gc
@@ -47,6 +51,7 @@ class Hotch
     def run
       start
       yield
+      self
     ensure
       stop
     end
