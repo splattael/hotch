@@ -15,8 +15,8 @@ class Hotch
     @options[:filter] = Regexp.new(filter) if filter
   end
 
-  def start(*args)
-    StackProf.start(*args) unless StackProf.running?
+  def start(...)
+    StackProf.start(...) unless StackProf.running?
   end
 
   def stop
@@ -26,8 +26,8 @@ class Hotch
     end
   end
 
-  def run(*args)
-    start(*args)
+  def run(...)
+    start(...)
     yield
   ensure
     stop
