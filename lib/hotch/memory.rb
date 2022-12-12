@@ -30,7 +30,9 @@ class Hotch
     end
 
     def self.report(name, **args, &block)
-      new(name, **args).run(&block).report
+      hotch = new(name, **args)
+      hotch.run(&block)
+      hotch.report
     end
 
     def start
@@ -52,7 +54,6 @@ class Hotch
     def run
       start
       yield
-      self
     ensure
       stop
     end
