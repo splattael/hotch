@@ -155,7 +155,7 @@ class Hotch
           path, line, *args = result.flatten(1)
           return if ignore_paths.any? { |ip| ip == path || ip === path }
 
-          filename = "#{strip_path(path || '?')}:#{line}"
+          filename = "#{strip_path(path)}:#{line}"
           new(filename, *args)
         end
 
@@ -180,6 +180,8 @@ class Hotch
 
         MAX_PATH_LENGTH = 50
         def self.strip_path(path)
+          return "?" unless path
+
           strip = %r{#{Regexp.union($LOAD_PATH)}/?}
           path.gsub!(strip, "")
           if path.size > MAX_PATH_LENGTH + 3
