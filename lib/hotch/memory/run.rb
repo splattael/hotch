@@ -1,3 +1,5 @@
-require 'hotch/memory'
+# frozen_string_literal: true
 
-Hotch.memory(name: $0)
+require "hotch/memory"
+
+Hotch.memory(name: $PROGRAM_NAME)

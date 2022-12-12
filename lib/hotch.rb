@@ -1,10 +1,12 @@
-require 'stackprof'
-require 'tmpdir'
+# frozen_string_literal: true
 
-require 'hotch/version'
+require "stackprof"
+require "tmpdir"
+
+require "hotch/version"
 
 class Hotch
-  attr_reader :name, :viewer, :filter, :options
+  attr_reader :viewer, :filter, :options
 
   def initialize(name, viewer: nil, mode: :wall, filter: nil, options: {})
     @name = name
@@ -52,11 +54,9 @@ class Hotch
 
     @reports.clear
 
-    if block_given?
-      yield report, svg
-    else
-      return report, svg
-    end
+    return report, svg unless block_given?
+
+    yield report, svg
   end
 
   def report_at_exit
@@ -81,7 +81,7 @@ class Hotch
   private
 
   def name
-    @name.gsub(/\W+/, '_')
+    @name.gsub(/\W+/, "_")
   end
 
   def report_dump(report, dir, file)
@@ -102,26 +102,25 @@ class Hotch
     svg
   end
 
-  def write_file(dir, file)
+  def write_file(dir, file, &block)
     path = File.join(dir, file)
-    File.open(path, 'wb') do |fh|
-      yield fh
-    end
+    File.open(path, "wb", &block)
     path
   end
 end
 
-def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'], mode: :wall, filter: ENV['HOTCH_FILTER'], options: {})
+# rubocop:disable Naming/MethodName
+def Hotch(name: $PROGRAM_NAME, aggregate: true, viewer: ENV.fetch("HOTCH_VIEWER", nil), mode: :wall,
+  filter: ENV.fetch("HOTCH_FILTER", nil), options: {}, &block)
   hotch = if aggregate
-    $hotch ||= Hotch.new(name, viewer: viewer, mode: mode, filter: filter, options: options)
-  else
-    caller = Kernel.caller_locations(1).first
-    name = "#{name}:#{caller.path}:#{caller.lineno}"
-    Hotch.new(name, viewer: viewer, filter: filter, options: options)
-  end
+            $hotch ||= Hotch.new(name, viewer: viewer, mode: mode, filter: filter, options: options)
+          else
+            caller = Kernel.caller_locations(1).first
+            name = "#{name}:#{caller.path}:#{caller.lineno}"
+            Hotch.new(name, viewer: viewer, filter: filter, options: options)
+          end
 
   hotch.report_at_exit
-  hotch.run do
-    yield
-  end
+  hotch.run(&block)
 end
+# rubocop:enable Naming/MethodName

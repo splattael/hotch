@@ -1,4 +1,6 @@
-require 'bundler'
-require 'hotch'
+# frozen_string_literal: true
+
+require "bundler"
+require "hotch"
 
 # run via ruby -rhotch/run bundler.rb

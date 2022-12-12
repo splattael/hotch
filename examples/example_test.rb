@@ -1,6 +1,8 @@
-require 'minitest/autorun'
-require 'hotch/minitest'
-require 'hotch/memory/minitest'
+# frozen_string_literal: true
+
+require "minitest/autorun"
+require "hotch/minitest"
+require "hotch/memory/minitest"
 
 Hotch::Minitest.run
 Hotch::Memory::Minitest.run

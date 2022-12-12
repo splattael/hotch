@@ -1,8 +1,10 @@
-require 'allocation_tracer'
-require 'stringio'
+# frozen_string_literal: true
+
+require "allocation_tracer"
+require "stringio"
 
 class Hotch
-  def self.memory(name: $0, aggregate: true, &block)
+  def self.memory(name: $PROGRAM_NAME, aggregate: true, &block)
     memory = if aggregate
                $hotch_memory ||= Memory.new(name)
              else
@@ -37,14 +39,16 @@ class Hotch
 
     def start
       return if @started
+
       GC.disable if @disable_gc
-      ObjectSpace::AllocationTracer.setup [:path, :line, :type]
+      ObjectSpace::AllocationTracer.setup %i[path line type]
       ObjectSpace::AllocationTracer.start
       @started = true
     end
 
     def stop
       return unless @started
+
       results = ObjectSpace::AllocationTracer.stop
       @started = nil
       GC.enable if @disable_gc
@@ -59,7 +63,7 @@ class Hotch
     end
 
     def report
-      # TODO make it persistent (as CSV)
+      # TODO: make it persistent (as CSV)
       report = @reports.inject(:+)
       @reports.clear
 
@@ -87,7 +91,7 @@ class Hotch
     private
 
     def name
-      @name.gsub(/\W+/, '_')
+      @name.gsub(/\W+/, "_")
     end
 
     class Report
@@ -101,9 +105,9 @@ class Hotch
       end
 
       def +(other)
-        by_key = Hash[@lines.map { |line| [line.key, line] }]
+        by_key = @lines.to_h { |line| [line.key, line] }
         other.lines.each do |line|
-          if existing = by_key[line.key]
+          if (existing = by_key[line.key])
             existing.sum(line)
           else
             by_key[line.key] = line
@@ -114,7 +118,7 @@ class Hotch
       end
 
       def format
-        # TODO refactor
+        # TODO: refactor
         max_lengths = Array.new(Line.members.size, 0)
         ([@header, @total] + @lines).each do |line|
           line.lengths.each.with_index do |length, i|
@@ -138,17 +142,11 @@ class Hotch
         io.string
       end
 
-      private def total!
-        return if defined? @total
-
-        @total = Line::Total.new
-        @lines.each do |line|
-          @total.sum(line)
-        end
-      end
-
+      # rubocop:disable Style/StructInheritance
       class Line < Struct.new(:filename, :type, :count, :old_count, :total_age,
                               :min_age, :max_age, :total_memsize)
+        # rubocop:enable Style/StructInheritance
+
         # [
         #   [path, lineno, type],
         #   [count, old_count, total_age, min_age, max_age, total_memsize]
@@ -156,7 +154,8 @@ class Hotch
         def self.from_result(result, ignore_paths)
           path, line, *args = result.flatten(1)
           return if ignore_paths.any? { |ip| ip == path || ip === path }
-          filename = "#{strip_path(path || "?")}:#{line}"
+
+          filename = "#{strip_path(path || '?')}:#{line}"
           new(filename, *args)
         end
 
@@ -179,15 +178,13 @@ class Hotch
           end
         end
 
-        private
-
         MAX_PATH_LENGTH = 50
         def self.strip_path(path)
           strip = %r{#{Regexp.union($LOAD_PATH)}/?}
           path.gsub!(strip, "")
           if path.size > MAX_PATH_LENGTH + 3
-            # TODO Refactor
-            "..." + path[-MAX_PATH_LENGTH..-1]
+            # TODO: Refactor
+            "...#{path[-MAX_PATH_LENGTH..]}"
           else
             path
           end
@@ -197,6 +194,17 @@ class Hotch
           def initialize
             super("TOTAL", "", 0, 0, 0, 0, 0, 0)
           end
+        end
+      end
+
+      private
+
+      def total!
+        return if defined? @total
+
+        @total = Line::Total.new
+        @lines.each do |line|
+          @total.sum(line)
         end
       end
     end

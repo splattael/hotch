@@ -1,6 +1,8 @@
-require 'hotch'
+# frozen_string_literal: true
 
-COUNT = ENV.fetch('COUNT', 1_000_000)
+require "hotch"
+
+COUNT = ENV.fetch("COUNT", 1_000_000)
 
 def foo
   "x" * 23

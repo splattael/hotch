@@ -1,0 +1,33 @@
+---
+inherit_from: .rubocop_todo.yml
+
+AllCops:
+  NewCops: enable
+
+require:
+  - rubocop-minitest
+  - rubocop-rake
+
+Layout/ArrayAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Layout/FirstArgumentIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent
+
+Layout/FirstHashElementIndentation:
+  EnforcedStyle: consistent
+
+Style/Documentation:
+  Enabled: false
+
+Style/CaseEquality:
+  Enabled: false
+
+Layout/ParameterAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Style/StringLiterals:
+  EnforcedStyle: double_quotes

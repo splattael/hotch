@@ -1,4 +1,6 @@
-require 'hotch/memory'
+# frozen_string_literal: true
+
+require "hotch/memory"
 
 ary = []
 
