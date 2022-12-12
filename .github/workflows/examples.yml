@@ -1,0 +1,29 @@
+name: Test examples
+on:
+  - push
+  - pull_request
+jobs:
+  run:
+    strategy:
+      fail-fast: false
+      matrix:
+        ruby-version:
+          - "2.7"
+          - "3.0"
+          - "3.1"
+          - truffleruby-head
+        runs-on:
+          - ubuntu-latest
+    name: ${{ matrix.ruby-version}} on ${{ matrix.runs-on }}
+    runs-on: ${{ matrix.runs-on }}
+    steps:
+      - uses: actions/checkout@master
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby-version }}
+      - name: Install dependencies
+        run: |
+          bundle install
+      - name:
+        run: |
+          bundle exec rake test:examples
