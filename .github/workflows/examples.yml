@@ -11,7 +11,6 @@ jobs:
           - "2.7"
           - "3.0"
           - "3.1"
-          - truffleruby-head
         runs-on:
           - ubuntu-latest
     name: ${{ matrix.ruby-version}} on ${{ matrix.runs-on }}
@@ -23,7 +22,7 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
       - name: Install system dependencies
         run: |
-          sudo apt install graphviz
+          sudo apt install --yes graphviz
       - name: Install dependencies
         run: |
           bundle install
