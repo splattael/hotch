@@ -6,24 +6,28 @@ require 'hotch/version'
 class Hotch
   attr_reader :name, :viewer, :filter, :options
 
-  def initialize(name, viewer: nil, filter: nil, options: {})
+  def initialize(name, viewer: nil, mode: :wall, filter: nil, options: {})
     @name = name
     @viewer = viewer
     @options = options
     @reports = []
+    @mode = mode
 
     @options[:filter] = Regexp.new(filter) if filter
   end
 
-  def start(...)
-    StackProf.start(...) unless StackProf.running?
+  def start(**options)
+    return if StackProf.running?
+
+    stackprof = { mode: @mode }.merge(options)
+    StackProf.start(**stackprof)
   end
 
   def stop
-    if StackProf.running?
-      StackProf.stop
-      @reports << StackProf::Report.new(results)
-    end
+    return unless StackProf.running?
+
+    StackProf.stop
+    @reports << StackProf::Report.new(results)
   end
 
   def run(...)
@@ -107,9 +111,9 @@ class Hotch
   end
 end
 
-def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'], filter: ENV['HOTCH_FILTER'], options: {})
+def Hotch(name: $0, aggregate: true, viewer: ENV['HOTCH_VIEWER'], mode: :wall, filter: ENV['HOTCH_FILTER'], options: {})
   hotch = if aggregate
-    $hotch ||= Hotch.new(name, viewer: viewer, filter: filter, options: options)
+    $hotch ||= Hotch.new(name, viewer: viewer, mode: mode, filter: filter, options: options)
   else
     caller = Kernel.caller_locations(1).first
     name = "#{name}:#{caller.path}:#{caller.lineno}"

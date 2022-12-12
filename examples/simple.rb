@@ -1,6 +1,6 @@
 require 'hotch'
 
-COUNT = ENV.fetch('COUNT', 10_000)
+COUNT = ENV.fetch('COUNT', 1_000_000)
 
 def foo
   "x" * 23
@@ -16,7 +16,7 @@ Hotch(aggregate: false) do
   end
 end
 
-Hotch() do
+Hotch(mode: :cpu) do
   COUNT.times do
     bar
   end
