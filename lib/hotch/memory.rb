@@ -1,4 +1,5 @@
 require 'allocation_tracer'
+require 'stringio'
 
 class Hotch
   def self.memory(name: $0, aggregate: true, &block)
