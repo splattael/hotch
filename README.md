@@ -209,9 +209,9 @@ Load `hotch/memory/minitest` in your `test/test_helper.rb` like this:
 require 'minitest/autorun'
 require 'hotch/memory/minitest'
 
-Hotch::Minitest.run
-Hotch::Minitest.run(name: "my name")
-Hotch::Minitest.run(disable_gc: false) # on by default
+Hotch::Memory::Minitest.run
+Hotch::Memory::Minitest.run(name: "my name")
+Hotch::Memory::Minitest.run(disable_gc: false) # on by default
 ```
 
 
