@@ -18,6 +18,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
+  spec.required_ruby_version = '>= 2.7.0'
+
   spec.add_runtime_dependency "stackprof", "~> 0.2.15"
   spec.add_runtime_dependency "allocation_tracer", "~> 0.6.3"
 
